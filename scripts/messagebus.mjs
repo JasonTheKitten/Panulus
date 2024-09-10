@@ -24,6 +24,13 @@ export default class MessageBus {
     }
   }
 
+  channel(intf) {
+    return {
+      publish: (event, data) => this.publish(intf, event, data),
+      subscribe: (events, handler) => this.subscribe(intf, events, handler)
+    };
+  }
+
   #subscribe(intf, event, handler) {
     if (!this.handlers[intf]) {
       this.handlers[intf] = {};

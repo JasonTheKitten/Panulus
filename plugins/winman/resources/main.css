@@ -1,0 +1,115 @@
+:root {
+  --header-color: #121212;
+  --header-text-color: #AAA;
+
+  --window-border-color: #333;
+  --window-decoration-button-color: #494949;
+  --window-decoration-button-color-hovered: #666;
+  --window-decoration-button-color-clicked: #222;
+  --window-title-text-color: #AAA;
+  --window-border-shadow-color: #484848;
+  --window-border-shadow-size: .5em;
+}
+
+/* Layout */
+.winman-layout {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  height: 100%;
+}
+
+.winman-layout > .window-pane {
+  flex-grow: 1;
+}
+
+/* Header */
+.winman-layout > .header {
+  background-color: var(--header-color);
+  color: var(--header-text-color);
+
+  box-sizing: border-box;
+  padding: .1em 1em;
+  font-size: .9em;
+
+  width: 100%;
+  height: 1.5em;
+
+  vertical-align: middle;
+
+  flex-grow: 0;
+}
+
+/* Windows */
+
+.winman-layout .window {
+  position: fixed;
+  top: 100px;
+  left: 100px;
+
+  box-shadow: var(--window-border-shadow-size) var(--window-border-shadow-size) var(--window-border-shadow-color);
+}
+
+.winman-layout .window > .header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  background-color: var(--window-border-color);
+  color: var(--window-title-text-color);
+
+  cursor: move;
+}
+
+.winman-layout .window > .header > .title {
+  flex-grow: 1;
+
+  text-align: center;
+  display: inline-block;
+  padding: 10px;
+}
+
+.winman-layout .window > .header > .controls {
+  flex-grow: 0;
+
+  display: inline-block;
+  padding: 10px;
+
+  cursor: default;
+}
+
+.winman-layout .window > .header > .controls > .button {
+  cursor: pointer;
+  display: inline-block;
+  text-align: center;
+
+  width: 20px;
+  height: 20px;
+
+  background-color: var(--window-decoration-button-color);
+  border-radius: 50%;
+
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+.winman-layout .window > .header > .controls > .button:hover {
+  background-color: var(--window-decoration-button-color-hovered);
+}
+
+.winman-layout .window > .header > .controls > .button:active {
+  background-color: var(--window-decoration-button-color-clicked);
+}
+
+.winman-layout .window > .content {
+  background-color: #FFF;
+
+  width: 800px;
+  height: 600px;
+
+  border: 1px solid var(--window-border-color);
+  border-top: none;
+}

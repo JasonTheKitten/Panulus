@@ -1,0 +1,5 @@
+{
+  "name": "Window Manager",
+  "id": "base.core.winman",
+  "main": "src/main"
+}

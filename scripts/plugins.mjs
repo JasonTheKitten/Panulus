@@ -8,6 +8,10 @@ const PLUGIN_NOT_LOADED = 0;
 const PLUGIN_LOADED = 1;
 
 const loadedPlugins = {};
+const providers = {};
+const providerCallbacks = {};
+
+//
 
 class PluginHandle {
 
@@ -35,11 +39,48 @@ class PluginHandle {
     return loadedPlugins[pid || this.#pid].service;
   }
 
+  provide(name, value) {
+    providers[this.#pid] = providers[this.#pid] || {};
+    providers[this.#pid][name] = value;
+
+    for (const key in providerCallbacks) {
+      const pluginCallbacks = providerCallbacks[key];
+      if (pluginCallbacks[name]) {
+        pluginCallbacks[name].provide(this.#pid, value);
+      }
+    }
+  }
+
+  providers(name) {
+    const providerList = [];
+    for (const pid in providers) {
+      if (providers[pid][name]) {
+        providerList.push({
+          pid,
+          provider: providers[pid][name]
+        });
+      }
+    }
+  }
+
+  onEachProvider(name, callbacks) {
+    providerCallbacks[this.#pid] = providerCallbacks[this.#pid] || {};
+    providerCallbacks[this.#pid][name] = callbacks;
+
+    for (const pid in providers) {
+      if (providers[pid][name]) {
+        callbacks.provide(pid, providers[pid][name]);
+      }
+    }
+  }
+
   resourceLoader() {
     return this.#resourceLoader;
   }
 
 }
+
+//
 
 export async function loadPlugin(source) {
   if (!source.includes('://')) {

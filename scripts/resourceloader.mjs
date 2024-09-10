@@ -41,7 +41,7 @@ export default class ResourceLoader {
       return document.createRange().createContextualFragment(await source.text());
     });
     this.#addLoader("css", async (source) => {
-      const style = new HTMLStyleElement();
+      const style = document.createElement("style");
       style.textContent = await source.text();
 
       return style;

@@ -1,0 +1,9 @@
+html, body, #app {
+  font-family: 'Open Sans', 'Roboto', sans-serif;
+
+  background-color: #666;
+
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
