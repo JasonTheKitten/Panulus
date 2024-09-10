@@ -1,0 +1,5 @@
+{
+  "name": "Workbench Core",
+  "id": "base.core.workbench",
+  "main": "main"
+}

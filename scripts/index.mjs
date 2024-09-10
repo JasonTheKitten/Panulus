@@ -1,1 +1,6 @@
-console.log("Hello, world!");
+
+import { loadPlugin } from "./pluginloader.mjs";
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadPlugin("workbench")
+});
