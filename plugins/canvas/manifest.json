@@ -1,0 +1,5 @@
+{
+  "name": "Canvas",
+  "id": "base.core.canvas",
+  "main": "src/main"
+}

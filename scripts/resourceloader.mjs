@@ -42,7 +42,8 @@ export default class ResourceLoader {
     });
     this.#addLoader("css", async (source) => {
       const style = document.createElement("style");
-      style.textContent = await source.text();
+      style.textContent = await source.text()
+        .then(text => text.replace("${pluginUrl}", this.#baseURL));
 
       return style;
     });

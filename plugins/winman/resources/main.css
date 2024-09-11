@@ -7,7 +7,7 @@
   --window-decoration-button-color-hovered: #666;
   --window-decoration-button-color-clicked: #222;
   --window-title-text-color: #AAA;
-  --window-border-shadow-color: #484848;
+  --window-border-shadow-color: #2228;
   --window-border-shadow-size: .5em;
 }
 
@@ -23,6 +23,10 @@
 
 .winman-layout > .window-pane {
   flex-grow: 1;
+  width: 100%;
+
+  position: relative;
+  overflow: hidden;
 }
 
 /* Header */
@@ -43,13 +47,23 @@
 }
 
 /* Windows */
-
 .winman-layout .window {
-  position: fixed;
+  position: absolute;
   top: 100px;
   left: 100px;
 
+  display: flex;
+  flex-direction: column;
+
+  border: 2px solid var(--window-border-color);
   box-shadow: var(--window-border-shadow-size) var(--window-border-shadow-size) var(--window-border-shadow-color);
+}
+
+.winman-layout .window.maximized {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .winman-layout .window > .header {
@@ -57,11 +71,17 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  flex-grow: 0;
 
   background-color: var(--window-border-color);
   color: var(--window-title-text-color);
 
   cursor: move;
+  user-select: none;
+}
+
+.winman-layout .window.maximized > .header {
+  cursor: default;
 }
 
 .winman-layout .window > .header > .title {
@@ -107,9 +127,14 @@
 .winman-layout .window > .content {
   background-color: #FFF;
 
+  flex-grow: 1;
+
   width: 800px;
   height: 600px;
 
-  border: 1px solid var(--window-border-color);
   border-top: none;
+}
+
+.winman-layout .window.maximized > .content {
+  width: 100%;
 }

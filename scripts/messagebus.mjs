@@ -18,7 +18,6 @@ export default class MessageBus {
     if (!this.handlers[intf] || !this.handlers[intf][event]) {
       return;
     }
-
     for (const handler of this.handlers[intf][event]) {
       handler(data, event);
     }

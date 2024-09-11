@@ -1,3 +1,7 @@
+import { setupDragSystem } from "./drag.mjs";
+import { setupMaximizeOption } from "./maximize.mjs";
+import { setupResizeSystem } from "./resize.mjs";
+
 export async function setup(plugin) {
   const winmanCSS = await plugin.resourceLoader().resource("resources/main.css", "css");
   document.head.appendChild(winmanCSS);
@@ -7,8 +11,24 @@ export async function setup(plugin) {
 
   const windowManagerWindowPane = windowManagerRoot.querySelector(".window-pane");
 
-  function openWindow() {
-    const window = windowRoot.cloneNode(true);
+  function setupWindowHooks(window) {
+    setupDragSystem(window);
+    setupResizeSystem(window);
+    setupMaximizeOption(window);
+
+    // TODO: Notify close
+    const closeButton = window.querySelector(".close");
+    closeButton.addEventListener("click", () => window.remove());
+  }
+
+  function openWindow(windowData) {
+    const window = windowRoot.cloneNode(true).querySelector(".window");
+
+    setupWindowHooks(window);
+
+    window.querySelector(".title").textContent = windowData.title;
+    window.querySelector(".content").appendChild(windowData.content);
+    
     windowManagerWindowPane.appendChild(window);
   }
 
@@ -17,6 +37,7 @@ export async function setup(plugin) {
   }
 
   plugin.provide("base.core.workbench.display", { attach });
-  openWindow();
-
+  
+  const messageChannel = plugin.messageBus().channel("base.core.workbench.window")
+  messageChannel.subscribe("open", windowData => openWindow(windowData));
 }
