@@ -8,17 +8,23 @@ export async function setup(plugin) {
   rootPane.setAttribute("class", "root-pane");
   rootPane.appendChild(canvas.content());
 
-  const layer = plugin.service("base.core.layer").createLayer({
-    width: 800,
-    height: 600
-  });
-  canvas.useLayerTree([layer]);
+  const layerService = plugin.service("base.core.layer");
+  const layer = layerService.createLayer({ width: 800, height: 600 });
+  const layerTree = layerService.createLayerTree();
+  layerTree.addLayer(layer);
+  canvas.useLayerTree(layerTree);
 
-  // Just a small test
   let brush;
   plugin.onEachProvider("base.core.brush", { provide: (name, brushes) => {
     brush = brushes[0];
   }});
+
+  const drawOptions = {
+    brush: brush,
+    color: { r: 0, g: 0, b: 0, a: 255 },
+    radius: 10
+  };
+  canvas.useDrawOptions(drawOptions);
 
   const workbenchService = plugin.service("base.core.workbench");
   workbenchService.windowService().openWindow({
@@ -28,26 +34,4 @@ export async function setup(plugin) {
 
   canvas.resize(rootPane.clientWidth, rootPane.clientHeight);
   canvas.redraw();
-
-  rootPane.addEventListener("mousedown", event => {
-    let operation = layer.startOperation(brush);
-    operation.draw({ x: event.offsetX, y: event.offsetY });
-    canvas.redraw();
-
-    function moveEvent(event) {
-      operation.draw({ x: event.offsetX, y: event.offsetY });
-      canvas.redraw();
-    }
-
-    function upEvent(event) {
-      operation.commit();
-      canvas.redraw();
-
-      rootPane.removeEventListener("mousemove", moveEvent);
-      rootPane.removeEventListener("mouseup", upEvent);
-    }
-    
-    rootPane.addEventListener("mousemove", moveEvent);
-    rootPane.addEventListener("mouseup", upEvent);
-  });
 }

@@ -17,7 +17,7 @@ export class BasicBrush {
 
   constructor(layerHandle, options) {
     this.#layerHandle = layerHandle;
-    this.#options = options || {};
+    this.#options = options;
 
     this.#targetCanvas = this.#createCanvas(layerHandle.canvas);
     this.#sourceCanvas = this.#options.allowSelfBlending ?
@@ -70,6 +70,10 @@ export class BasicBrush {
     this.#previousDrawPosition = position;
   }
 
+  breakStroke() {
+    this.#previousDrawPosition = null;
+  }
+
   #setup() {
     const gl = this.#targetGl;
     const program = this.#createGLProgram();
@@ -83,7 +87,7 @@ export class BasicBrush {
     this.#drawEndLocation = gl.getUniformLocation(program, "drawEnd");
 
     const radiusLocation = gl.getUniformLocation(program, "radius");
-    gl.uniform1f(radiusLocation, 10); // TODO: Use radius from options
+    gl.uniform1f(radiusLocation, this.#options.radius); // TODO: Use radius from options
 
     const shapeAttributeLocation = gl.getAttribLocation(program, "shape");
     const shapeBuffer = gl.createBuffer();

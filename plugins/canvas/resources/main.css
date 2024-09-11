@@ -1,4 +1,10 @@
-canvas {
+canvas.drawing-canvas {
   background-color: #FFFFFF;
   background: url("${pluginUrl}/resources/default_texture.png") repeat;
+  cursor: none;
+}
+
+canvas.cursor-canvas {
+  position: absolute;
+  pointer-events: none;
 }
