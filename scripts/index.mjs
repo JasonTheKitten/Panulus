@@ -2,7 +2,7 @@
 import { loadPlugin } from "./plugins.mjs";
 
 const PLUGINS_TO_LOAD = [
-  "workbench", "winman", "layer", "project", "brush", "canvas", "canvaswindow"
+  "workbench", "winman", "layer", "project", "brush", "brushdock", "canvas", "canvaswindow"
 ];
 
 document.addEventListener('DOMContentLoaded', () => {

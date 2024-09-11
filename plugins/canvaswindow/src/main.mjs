@@ -33,17 +33,12 @@ export async function setup(plugin) {
   canvas.useDrawOptions(drawOptions);
 
   let settingsWatcher = projectOptions.createWatcher(plugin);
-  settingsWatcher.watch("brush.type", (brush) => {
-    drawOptions.brush = brush;
-  });
-  settingsWatcher.watch("brush.color", (color) => {
-    drawOptions.color = color;
-  });
-  settingsWatcher.watch("brush.radius", (radius) => {
+  settingsWatcher.watch("brush.type", brush => drawOptions.brush = brush);
+  settingsWatcher.watch("brush.color", color => drawOptions.color = color);
+  settingsWatcher.watch("brush.radius", radius => {
     drawOptions.radius = radius;
+    canvas.update();
   });
-
-  projectService.createCurrentProjectOptions(plugin).set("brush.radius", 50);
 
   const workbenchService = plugin.service("base.core.workbench");
   workbenchService.windowService().openWindow({

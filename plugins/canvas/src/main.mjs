@@ -5,6 +5,9 @@ export class Canvas {
   #drawOptions;
   #layerTree;
 
+  #cursorCanvas;
+  #cursorPosition = { x: 0, y: 0 };
+
   constructor(canvas) {
     this.#canvas = canvas;
     this.#nativeSize = { width: canvas.width, height: canvas.height };
@@ -28,6 +31,10 @@ export class Canvas {
     this.#layerTree.drawToCanvas(this.#canvas);
   }
 
+  update() {
+    this.#redrawCursor();
+  }
+
   rescale(scaleFactor) {
     this.#canvas.width = this.#nativeSize.width * scaleFactor;
     this.#canvas.height = this.#nativeSize.height * scaleFactor;
@@ -46,25 +53,32 @@ export class Canvas {
     const cursorCanvas = document.createElement("canvas");
     cursorCanvas.setAttribute("class", "cursor-canvas");
     document.body.appendChild(cursorCanvas);
+    this.#cursorCanvas = cursorCanvas;
 
     const self = this;
     this.#canvas.addEventListener("mousemove", event => {
-      const radius = self.#drawOptions.radius * self.#getScaleFactor();
-      cursorCanvas.style.visibility = "visible";
-      cursorCanvas.width = radius * 2 + 1;
-      cursorCanvas.height = radius * 2 + 1;
-      cursorCanvas.style.left = `${event.clientX - radius}px`;
-      cursorCanvas.style.top = `${event.clientY  - radius}px`;
-
-      const ctx = cursorCanvas.getContext("2d");
-      ctx.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
-      ctx.beginPath();
-      ctx.arc(radius, radius, radius, 0, 2 * Math.PI);
-      ctx.stroke();
+      this.#cursorPosition = { x: event.clientX, y: event.clientY };
+      self.#redrawCursor(event);
     });
     this.#canvas.addEventListener("mouseleave", () => {
       cursorCanvas.style.visibility = "hidden";
     });
+  }
+
+  #redrawCursor() {
+    const cursorCanvas = this.#cursorCanvas;
+    const radius = this.#drawOptions.radius * this.#getScaleFactor();
+    cursorCanvas.style.visibility = "visible";
+    cursorCanvas.width = radius * 2 + 1;
+    cursorCanvas.height = radius * 2 + 1;
+    cursorCanvas.style.left = `${this.#cursorPosition.x - radius}px`;
+    cursorCanvas.style.top = `${this.#cursorPosition.y  - radius}px`;
+
+    const ctx = cursorCanvas.getContext("2d");
+    ctx.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+    ctx.beginPath();
+    ctx.arc(radius, radius, radius, 0, 2 * Math.PI);
+    ctx.stroke();
   }
 
   #setupDrawListener() {

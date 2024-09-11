@@ -1,0 +1,5 @@
+{
+  "name": "Brush Dock",
+  "id": "base.core.brushdock",
+  "main": "src/main"
+}
