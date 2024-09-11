@@ -2,14 +2,15 @@ export async function setup(plugin) {
   const canvasWindowCSS = await plugin.resourceLoader().resource("resources/main.css", "css");
   document.head.appendChild(canvasWindowCSS);
 
-  const canvas = plugin.service("base.core.canvas").createCanvas();
+  const canvasSize = { width: 800, height: 600 };
+  const canvas = plugin.service("base.core.canvas").createCanvas(canvasSize);
 
   const rootPane = document.createElement("div");
   rootPane.setAttribute("class", "root-pane");
   rootPane.appendChild(canvas.content());
 
   const layerService = plugin.service("base.core.layer");
-  const layer = layerService.createLayer({ width: 800, height: 600 });
+  const layer = layerService.createLayer(canvasSize);
   const layerTree = layerService.createLayerTree();
   layerTree.addLayer(layer);
   canvas.useLayerTree(layerTree);

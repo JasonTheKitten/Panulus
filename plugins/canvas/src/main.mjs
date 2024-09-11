@@ -1,11 +1,15 @@
 export class Canvas {
 
   #canvas;
+  #nativeSize;
   #drawOptions;
   #layerTree;
 
   constructor(canvas) {
     this.#canvas = canvas;
+    this.#nativeSize = { width: canvas.width, height: canvas.height };
+    this.#canvas.style.aspectRatio = `${this.#nativeSize.width} / ${this.#nativeSize.height}`;
+
     this.#setupEventListeners();
   }
 
@@ -24,9 +28,9 @@ export class Canvas {
     this.#layerTree.drawToCanvas(this.#canvas);
   }
 
-  resize(width, height) {
-    this.#canvas.width = width;
-    this.#canvas.height = height;
+  rescale(scaleFactor) {
+    this.#canvas.width = this.#nativeSize.width * scaleFactor;
+    this.#canvas.height = this.#nativeSize.height * scaleFactor;
   }
 
   content() {
@@ -45,10 +49,10 @@ export class Canvas {
 
     const self = this;
     this.#canvas.addEventListener("mousemove", event => {
-      const radius = self.#drawOptions.radius;
+      const radius = self.#drawOptions.radius * self.#getScaleFactor();
       cursorCanvas.style.visibility = "visible";
-      cursorCanvas.width = radius * 2;
-      cursorCanvas.height = radius * 2;
+      cursorCanvas.width = radius * 2 + 1;
+      cursorCanvas.height = radius * 2 + 1;
       cursorCanvas.style.left = `${event.clientX - radius}px`;
       cursorCanvas.style.top = `${event.clientY  - radius}px`;
 
@@ -105,15 +109,16 @@ export class Canvas {
   }
 
   #rescaleMouseCoords(coords) {
-    const rescaleFactor = {
-      x: this.#canvas.width / this.#canvas.clientWidth,
-      y: this.#canvas.height / this.#canvas.clientHeight
-    };
+    const scaleFactor = 1/this.#getScaleFactor();
 
     return {
-      x: coords.x * rescaleFactor.x,
-      y: coords.y * rescaleFactor.y
+      x: coords.x * scaleFactor,
+      y: coords.y * scaleFactor
     };
+  }
+
+  #getScaleFactor() {
+    return this.#canvas.clientWidth / this.#canvas.width;
   }
 
 }
@@ -123,9 +128,11 @@ export async function setup(plugin) {
   document.head.appendChild(canvasCSS);
 
   plugin.registerService({
-    createCanvas() {
+    createCanvas(options) {
       const canvas = document.createElement("canvas");
       canvas.setAttribute("class", "drawing-canvas");
+      canvas.width = options.width;
+      canvas.height = options.height;
 
       return new Canvas(canvas);
     }
