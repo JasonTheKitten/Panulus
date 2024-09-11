@@ -1,0 +1,5 @@
+{
+  "name": "Default Brush Pack",
+  "id": "base.core.brush",
+  "main": "src/main"
+}

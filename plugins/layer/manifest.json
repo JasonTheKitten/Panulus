@@ -1,0 +1,5 @@
+{
+  "name": "Layer System",
+  "id": "base.core.layer",
+  "main": "src/main"
+}

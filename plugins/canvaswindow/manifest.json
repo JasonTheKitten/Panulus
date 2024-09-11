@@ -1,0 +1,5 @@
+{
+  "name": "Canvas Window",
+  "id": "base.core.canvaswindow",
+  "main": "src/main"
+}

@@ -1,6 +1,4 @@
 canvas {
-  height: 100%;
-  width: 100%;
   background-color: #FFFFFF;
   background: url("${pluginUrl}/resources/default_texture.png") repeat;
 }
