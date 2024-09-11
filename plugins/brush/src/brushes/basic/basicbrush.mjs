@@ -8,7 +8,10 @@ export class BasicBrush {
   #targetCanvas;
   #targetGl;
 
-  #targetPositionLocation;
+  #drawStartLocation;
+  #drawEndLocation;
+
+  #previousDrawPosition;
 
   #resources = [];
 
@@ -48,13 +51,23 @@ export class BasicBrush {
   }
 
   draw(position) {
+    if (this.#previousDrawPosition == null) {
+      this.#previousDrawPosition = position;
+    }
+
     const gl = this.#targetGl;
-    gl.uniform2fv(this.#targetPositionLocation, [
+    gl.uniform2fv(this.#drawStartLocation, [
       position.x,
       this.#targetCanvas.height - position.y
     ]);
+    gl.uniform2fv(this.#drawEndLocation, [
+      this.#previousDrawPosition.x,
+      this.#targetCanvas.height - this.#previousDrawPosition.y
+    ]);
 
     gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+    this.#previousDrawPosition = position;
   }
 
   #setup() {
@@ -64,9 +77,10 @@ export class BasicBrush {
     gl.bindVertexArray(vao);
 
     const colorLocation = gl.getUniformLocation(program, "color");
-    gl.uniform4fv(colorLocation, [ 1, 0, 0, 1 ]); // TODO: Use color from options
+    gl.uniform4fv(colorLocation, [ 0, 0, 0, 1 ]); // TODO: Use color from options
     
-    this.#targetPositionLocation = gl.getUniformLocation(program, "targetPosition");
+    this.#drawStartLocation = gl.getUniformLocation(program, "drawStart");
+    this.#drawEndLocation = gl.getUniformLocation(program, "drawEnd");
 
     const radiusLocation = gl.getUniformLocation(program, "radius");
     gl.uniform1f(radiusLocation, 10); // TODO: Use radius from options

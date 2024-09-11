@@ -29,15 +29,25 @@ export async function setup(plugin) {
   canvas.resize(rootPane.clientWidth, rootPane.clientHeight);
   canvas.redraw();
 
-  function drawEvent(event) {
-    if (!(event.buttons & 1)) return;
-
+  rootPane.addEventListener("mousedown", event => {
     let operation = layer.startOperation(brush);
     operation.draw({ x: event.offsetX, y: event.offsetY });
-    operation.commit();
-
     canvas.redraw();
-  }
-  rootPane.addEventListener("mousedown", drawEvent);
-  rootPane.addEventListener("mousemove", drawEvent);
+
+    function moveEvent(event) {
+      operation.draw({ x: event.offsetX, y: event.offsetY });
+      canvas.redraw();
+    }
+
+    function upEvent(event) {
+      operation.commit();
+      canvas.redraw();
+
+      rootPane.removeEventListener("mousemove", moveEvent);
+      rootPane.removeEventListener("mouseup", upEvent);
+    }
+    
+    rootPane.addEventListener("mousemove", moveEvent);
+    rootPane.addEventListener("mouseup", upEvent);
+  });
 }
