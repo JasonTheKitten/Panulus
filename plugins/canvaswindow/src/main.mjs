@@ -20,6 +20,11 @@ export async function setup(plugin) {
     brush = brushes[0];
   }});
 
+  const projectService = plugin.service("base.core.project");
+  const projectOptions = projectService.createProjectOptions(plugin);
+  const project = projectService.createProject(projectOptions);
+  projectService.setCurrentProject(project);
+
   const drawOptions = {
     brush: brush,
     color: { r: 0, g: 0, b: 0, a: 255 },
@@ -27,12 +32,24 @@ export async function setup(plugin) {
   };
   canvas.useDrawOptions(drawOptions);
 
+  let settingsWatcher = projectOptions.createWatcher(plugin);
+  settingsWatcher.watch("brush.type", (brush) => {
+    drawOptions.brush = brush;
+  });
+  settingsWatcher.watch("brush.color", (color) => {
+    drawOptions.color = color;
+  });
+  settingsWatcher.watch("brush.radius", (radius) => {
+    drawOptions.radius = radius;
+  });
+
+  projectService.createCurrentProjectOptions(plugin).set("brush.radius", 50);
+
   const workbenchService = plugin.service("base.core.workbench");
   workbenchService.windowService().openWindow({
     title: "Canvas",
     content: rootPane
   });
 
-  canvas.resize(rootPane.clientWidth, rootPane.clientHeight);
   canvas.redraw();
 }

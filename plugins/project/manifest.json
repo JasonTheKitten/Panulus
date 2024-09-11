@@ -1,0 +1,5 @@
+{
+  "name": "Project Configuration",
+  "id": "base.core.project",
+  "main": "src/main"
+}
