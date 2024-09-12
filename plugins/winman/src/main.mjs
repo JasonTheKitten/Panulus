@@ -26,10 +26,22 @@ export async function setup(plugin) {
 
     setupWindowHooks(window);
 
+    const windowContent = window.querySelector(".content");
     window.querySelector(".title").textContent = windowData.title;
-    window.querySelector(".content").appendChild(windowData.content);
+    windowContent.appendChild(windowData.content);
+
+    if (windowData.size) {
+      windowContent.style.width = `${windowData.size.width}px`;
+      windowContent.style.height = `${windowData.size.height}px`;
+    }
+    if (windowData.position) {
+      window.style.left = `${windowData.position.x}px`;
+      window.style.top = `${windowData.position.y}px`;
+    }
     
     windowManagerWindowPane.appendChild(window);
+
+    addWindowFunctions(window);
   }
 
   function attach() {
@@ -40,4 +52,29 @@ export async function setup(plugin) {
   
   const messageChannel = plugin.messageBus().channel("base.core.workbench.window")
   messageChannel.subscribe("open", windowData => openWindow(windowData));
+}
+
+function addWindowFunctions(window) {
+  window.bringToFront = () => {
+    const parent = window.parentElement;
+    const windows = parent.children;
+
+    // Reparenting the current window will break event handling, so
+    // reparent all other windows instead.
+    for (const win of windows) {
+      if (win !== window) {
+        parent.insertBefore(win, window);
+      }
+    }
+  }
+  window.makeActive = () => {
+    const windows = window.parentElement.children;
+    for (const win of windows) {
+      win.classList.remove("active");
+    }
+    window.classList.add("active");
+
+    window.bringToFront();
+  };
+  window.addEventListener("mousedown", () => window.makeActive(), true);
 }

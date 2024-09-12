@@ -1,0 +1,44 @@
+.colordock {
+  height: 100%;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: stretch;
+}
+
+/* Color palette */
+.colordock .colorpalette {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.colordock .colorpalette > .palette {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  column-gap: .3em;
+  row-gap: .3em;
+  padding: .7em;
+}
+
+.colordock .colorpalette > .palette > .color {
+  width: 2em;
+  height: 2em;
+  border-radius: 10%;
+  border: 1px solid gray;
+  cursor: pointer;
+  flex-grow: 0;
+}
+
+.colordock .colorpalette > .palette > .color.selected {
+  border: 3px solid green;
+  width: calc(2em - 4px);
+  height: calc(2em - 4px);
+}
+
+.colordock .colorpalette > .color-name {
+  flex-grow: 0;
+  border-top: 1px solid gray;
+}

@@ -1,0 +1,5 @@
+{
+  "name": "ColorDock",
+  "id": "base.core.colordock",
+  "main": "src/main"
+}

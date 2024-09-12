@@ -81,7 +81,8 @@ export class BasicBrush {
     gl.bindVertexArray(vao);
 
     const colorLocation = gl.getUniformLocation(program, "color");
-    gl.uniform4fv(colorLocation, [ 0, 0, 0, 1 ]); // TODO: Use color from options
+    const color = this.#options.color || { red: 0, green: 0, blue: 0 };
+    gl.uniform4fv(colorLocation, [color.red / 255, color.green / 255, color.blue / 255, 1 ]); // TODO: Use color from options
     
     this.#drawStartLocation = gl.getUniformLocation(program, "drawStart");
     this.#drawEndLocation = gl.getUniformLocation(program, "drawEnd");

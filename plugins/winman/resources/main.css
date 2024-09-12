@@ -3,12 +3,17 @@
   --header-text-color: #AAA;
 
   --window-border-color: #333;
+  --window-border-active-color: #448;
   --window-decoration-button-color: #494949;
+  --window-decoration-active-button-color: #66A;
   --window-decoration-button-color-hovered: #666;
   --window-decoration-button-color-clicked: #222;
   --window-title-text-color: #AAA;
+  --window-title-text-active-color: #FFF;
   --window-border-shadow-color: #2228;
   --window-border-shadow-size: .5em;
+  --window-background-color: #222;
+  --window-foreground-color: #666;
 }
 
 /* Layout */
@@ -66,6 +71,11 @@
   height: 100%;
 }
 
+.winman-layout .window.active > .header {
+  background-color: var(--window-border-active-color);
+  color: var(--window-title-text-active-color);
+}
+
 .winman-layout .window > .header {
   display: flex;
   flex-direction: row;
@@ -116,8 +126,12 @@
   margin-right: 2px;
 }
 
+.winman-layout .window.active > .header > .controls > .button {
+  background-color: var(--window-decoration-active-button-color);
+}
+
 .winman-layout .window > .header > .controls > .button:hover {
-  background-color: var(--window-decoration-button-color-hovered);
+  background-color: var(--window-decoration-button-color-hovered) ;
 }
 
 .winman-layout .window > .header > .controls > .button:active {
@@ -125,7 +139,8 @@
 }
 
 .winman-layout .window > .content {
-  background-color: #FFF;
+  background-color: var(--window-background-color);
+  color: var(--window-foreground-color);
 
   flex-grow: 1;
 

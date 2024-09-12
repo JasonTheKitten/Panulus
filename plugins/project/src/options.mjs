@@ -99,13 +99,19 @@ export class CurrentProjectOptions {
   createWatcher() {
     const self = this;
     const watcher = {};
-    const valueHandlers = {};
+    const valueHandlers = this.#valueHandlers;
     watcher.watch = function(valueName, handler) {
       valueHandlers[valueName] = valueHandlers[valueName] || [];
       valueHandlers[valueName].push(handler);
-      self.#currentWatcher.watch(valueName, handler);
+      if (self.#currentWatcher) {
+        self.#currentWatcher.watch(valueName, handler);
+      }
     }
     watcher.sync = function() {
+      if (!self.#currentWatcher) {
+        return;
+      }
+
       for (const valueName in valueHandlers) {
         const value = self.get(valueName);
         for (const handler of valueHandlers[valueName]) {
