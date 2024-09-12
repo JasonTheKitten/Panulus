@@ -1,4 +1,5 @@
 import { setup as paletteSetup, createPaletteView } from "./colorpalette.mjs";
+import { setup as colorWheelSetup, createColorWheelView } from "./colorwheel.mjs";
 
 export async function setup(plugin) {
   const colorDockCSS = await plugin.resourceLoader().resource("resources/colordock.css", "css");
@@ -11,7 +12,10 @@ export async function setup(plugin) {
   const projectService = plugin.service("base.core.project");
   const currentProjectOptions = projectService.createCurrentProjectOptions(plugin);
 
-  await paletteSetup(plugin);
+  await Promise.all([paletteSetup(plugin), colorWheelSetup(plugin)]);
+
+  const colorWheelView = createColorWheelView(plugin, currentProjectOptions);
+  colorDockContent.appendChild(colorWheelView);
 
   const paletteView = createPaletteView(plugin, currentProjectOptions);
   colorDockContent.appendChild(paletteView);
