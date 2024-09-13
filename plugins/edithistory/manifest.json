@@ -1,0 +1,5 @@
+{
+  "id": "base.core.edithistory",
+  "name": "Edit History",
+  "main": "src/main"
+}

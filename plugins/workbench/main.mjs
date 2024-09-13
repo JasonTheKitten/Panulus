@@ -80,6 +80,15 @@ function setupKeyCombos(plugin) {
   }
 
   function compareKeyCombos(keyCombo) {
+    if (typeof keyCombo[0] === "object") {
+      for (const combo of keyCombo) {
+        if (compareKeyCombos(combo)) {
+          return true;
+        }
+      }
+      return false;
+    }
+
     for (const key of keyCombo) {
       if (keyMap[key] !== true) {
         return false;

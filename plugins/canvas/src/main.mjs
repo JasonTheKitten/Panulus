@@ -1,6 +1,7 @@
 export class Canvas {
 
   #canvas;
+  #options;
   #nativeSize;
   #drawOptions;
   #layerTree;
@@ -8,8 +9,9 @@ export class Canvas {
   #cursorCanvas;
   #cursorPosition = { x: 0, y: 0 };
 
-  constructor(canvas) {
+  constructor(canvas, options) {
     this.#canvas = canvas;
+    this.#options = options;
     this.#nativeSize = { width: canvas.width, height: canvas.height };
     this.#canvas.style.aspectRatio = `${this.#nativeSize.width} / ${this.#nativeSize.height}`;
 
@@ -108,8 +110,10 @@ export class Canvas {
       }
   
       function upEvent(_event) {
-        operation.commit();
-        self.redraw();
+        operation.commit({
+          editTracker: self.#options.editTracker,
+          changeNotifier: self.redraw.bind(self)
+        });
   
         self.#canvas.removeEventListener("mousemove", moveEvent);
         self.#canvas.removeEventListener("mouseup", upEvent);
@@ -145,10 +149,10 @@ export async function setup(plugin) {
     createCanvas(options) {
       const canvas = document.createElement("canvas");
       canvas.setAttribute("class", "drawing-canvas");
-      canvas.width = options.width;
-      canvas.height = options.height;
+      canvas.width = options.canvasSize.width;
+      canvas.height = options.canvasSize.height;
 
-      return new Canvas(canvas);
+      return new Canvas(canvas, options);
     }
   });
 }

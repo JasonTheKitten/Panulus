@@ -24,12 +24,28 @@ export default class Layer extends LayerBase {
   startOperation(operation, options) {
     const currentOperation = new operation({
       canvas: this.#canvas,
-      onOperationCommitted: canvas => this.#canvas = canvas,
+      onOperationCommitted: this.commitOperation.bind(this),
       onOperationFinished: () => this.#currentOperation = null
     }, options);
     this.#currentOperation = currentOperation;
 
     return currentOperation;
+  }
+
+  commitOperation(newCanvas, commitOptions) {
+    const oldCanvas = this.#canvas;
+    const edit = {
+      undo: () => {
+        this.#canvas = oldCanvas;
+        commitOptions.changeNotifier();
+      },
+      redo: () => {
+        this.#canvas = newCanvas;
+        commitOptions.changeNotifier();
+      }
+    };
+
+    commitOptions.editTracker.pushEdit(edit);
   }
 
 }

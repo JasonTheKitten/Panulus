@@ -2,7 +2,7 @@
 import { loadPlugin } from "./plugins.mjs";
 
 const PLUGINS_TO_LOAD = [
-  "workbench", "winman", "layer", "project", "brush", "brushdock", "colordock", "layerdock",
+  "workbench", "winman", "project", "edithistory", "layer", "brush", "brushdock", "colordock", "layerdock",
   "canvas", "canvaswindow"
 ];
 

@@ -4,8 +4,20 @@ export async function setup(plugin) {
   const canvasWindowCSS = await plugin.resourceLoader().resource("resources/main.css", "css");
   document.head.appendChild(canvasWindowCSS);
 
+  const projectService = plugin.service("base.core.project");
+  const projectOptions = projectService.createProjectOptions(plugin);
+  const project = projectService.createProject(projectOptions);
+  projectService.setCurrentProject(project);
+
+  const editHistoryService = plugin.service("base.core.edithistory");
+  const editTracker = new editHistoryService.EditTracker(projectOptions);
+
   const canvasSize = { width: 800, height: 600 };
-  const canvas = plugin.service("base.core.canvas").createCanvas(canvasSize);
+  const options = {
+    canvasSize,
+    editTracker
+  }
+  const canvas = plugin.service("base.core.canvas").createCanvas(options);
 
   const rootPane = document.createElement("div");
   rootPane.setAttribute("class", "root-pane");
@@ -16,17 +28,12 @@ export async function setup(plugin) {
   layerTree.rootGroup().newLayer(canvasSize);
   canvas.useLayerTree(layerTree);
   layerTree.onChanged(() => canvas.redraw());
+  projectOptions.set("layer.tree", layerTree);
 
   let brush;
   plugin.onEachProvider("base.core.brush", { provide: (name, brushes) => {
     brush = brushes[0];
   }});
-
-  const projectService = plugin.service("base.core.project");
-  const projectOptions = projectService.createProjectOptions(plugin);
-  const project = projectService.createProject(projectOptions);
-  projectService.setCurrentProject(project);
-  projectOptions.set("layer.tree", layerTree);
 
   const drawOptions = {
     brush: brush,

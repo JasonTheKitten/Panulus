@@ -32,8 +32,8 @@ export class BasicBrush {
     this.#setup();
   }
 
-  commit() {
-    this.#layerHandle.onOperationCommitted(this.preview());
+  commit(commitOptions) {
+    this.#layerHandle.onOperationCommitted(this.preview(), commitOptions);
     this.#done();
   }
 
