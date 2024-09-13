@@ -42,12 +42,22 @@ export class BasicBrush {
   }
 
   preview() {
-    const canvas = this.#createCanvas(this.#targetCanvas);
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(this.#layerHandle.canvas, 0, 0);
-    ctx.drawImage(this.#targetCanvas, 0, 0);
+    let filterHandle = {
+      sourceCanvas: this.#sourceCanvas,
+      inputCanvas: this.#targetCanvas,
+      targetCanvas: this.#layerHandle.canvas,
+      createCanvas: this.#createCanvas.bind(this),
+    }
 
-    return canvas;
+    let filters = this.#options.filters;
+    for (let i = 0; i < filters.length; i++) {
+      const filterResult = filters[i].apply(filterHandle);
+      filterHandle.sourceCanvas = this.#sourceCanvas;
+      filterHandle.inputCanvas = filterResult.transformedInputCanvas;
+      filterHandle.targetCanvas = filterResult.outputCanvas;
+    }
+
+    return filterHandle.targetCanvas;
   }
 
   draw(position) {

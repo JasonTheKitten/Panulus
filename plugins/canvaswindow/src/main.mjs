@@ -1,3 +1,5 @@
+import { EraserFilter, MergeFilter } from "./filters.mjs";
+
 export async function setup(plugin) {
   const canvasWindowCSS = await plugin.resourceLoader().resource("resources/main.css", "css");
   document.head.appendChild(canvasWindowCSS);
@@ -28,17 +30,23 @@ export async function setup(plugin) {
   const drawOptions = {
     brush: brush,
     color: { r: 0, g: 0, b: 0, a: 255 },
-    radius: 10
+    radius: 10,
+    filters: [ new MergeFilter() ]
   };
   canvas.useDrawOptions(drawOptions);
 
   let settingsWatcher = projectOptions.createWatcher(plugin);
   settingsWatcher.watch("brush.type", brush => drawOptions.brush = brush);
-  settingsWatcher.watch("brush.color", color => drawOptions.color = color);
+  settingsWatcher.watch("brush.color", color => {
+    drawOptions.color = color;
+    projectOptions.set("brush.eraser", false);
+  });
   settingsWatcher.watch("brush.radius", radius => {
     drawOptions.radius = radius;
     canvas.update();
   });
+
+  settingsWatcher.watch("brush.eraser", () => updateFilters(projectOptions, drawOptions));
 
   const workbenchService = plugin.service("base.core.workbench");
   workbenchService.windowService().openWindow({
@@ -47,4 +55,13 @@ export async function setup(plugin) {
   });
 
   canvas.redraw();
+}
+
+function updateFilters(projectOptions, drawOptions) {
+  const isEraserActive = projectOptions.get("brush.eraser", false);
+  if (isEraserActive) {
+    drawOptions.filters = [ new EraserFilter() ];
+  } else {
+    drawOptions.filters = [ new MergeFilter() ];
+  }
 }

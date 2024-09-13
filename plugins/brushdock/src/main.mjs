@@ -22,6 +22,12 @@ export async function setup(plugin) {
       id: "base.core.brushdock.growsize",
       callback: "repeat",
       repeat: () => clampedAdjust("brush.radius", 1, 1, MAX_BRUSH_SIZE)
+    },
+    {
+      defaultKeyCombo: ["e"],
+      id: "base.core.brushdock.eraser",
+      callback: () => currentProjectOptions.set("brush.eraser",
+        !currentProjectOptions.get("brush.eraser", false))
     }
   ])
 }
