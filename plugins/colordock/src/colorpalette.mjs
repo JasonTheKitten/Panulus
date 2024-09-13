@@ -135,6 +135,10 @@ export function createPaletteView(plugin, projectOptions) {
       return;
     }
     currentColor = getClosestPaletteColor(value);
+    if (currentColor == null) {
+      colorName.textContent = "None";
+      return;
+    }
     colorName.textContent = currentColor.name;
     currentColor.view.classList.add("selected");
   });

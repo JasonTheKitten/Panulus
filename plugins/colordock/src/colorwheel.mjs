@@ -182,6 +182,20 @@ export function createColorWheelView(plugin, projectOptions) {
 
   let enableHueSelection = false;
   let enableSaturationValueSelection = false;
+  let disableHueChange = false;
+
+  function updateHSVColor(hue, saturation, value) {
+    const rgbColor = hsvToRgb(hue / Math.PI / 2, saturation, value);
+    const color = {
+      red: rgbColor.red * 255,
+      green: rgbColor.green * 255,
+      blue: rgbColor.blue * 255
+    };
+
+    disableHueChange = true;
+    projectOptions.set("brush.color", color);
+    disableHueChange = false;
+  }
   function handleMouseDownEvent(e) {
     const width = colorWheelCanvas.clientWidth;
     const height = colorWheelCanvas.clientHeight;
@@ -212,14 +226,8 @@ export function createColorWheelView(plugin, projectOptions) {
 
       const oldRGBColor = projectOptions.get("brush.color", { red: 0, green: 0, blue: 0 });
       const oldHsvColor = rgbToHsv(oldRGBColor.red / 255, oldRGBColor.green / 255, oldRGBColor.blue / 255);
-      const newRGBColor = hsvToRgb(selectedHue / Math.PI / 2, oldHsvColor.saturation, oldHsvColor.value);
-      const newColor = {
-        red: newRGBColor.red * 255,
-        green: newRGBColor.green * 255,
-        blue: newRGBColor.blue * 255
-      };
-
-      projectOptions.set("brush.color", newColor);
+      
+      updateHSVColor(selectedHue, oldHsvColor.saturation, oldHsvColor.value);
     } else if (enableSaturationValueSelection) {
       const trianglePoints = canvasDeterminePointsOfTriangleWithinCircle(INNER_RADIUS_FACTOR, width);
       const [x1, y1, x2, y2, x3, y3] = trianglePoints;
@@ -229,14 +237,7 @@ export function createColorWheelView(plugin, projectOptions) {
       const unclampedSaturation = (unfixedSaturation - .5) / value + .5;
       const saturation = Math.min(Math.max(unclampedSaturation, 0), 1);
 
-      const unscaledColor = hsvToRgb(selectedHue / Math.PI / 2, saturation, value);
-      const color = {
-        red: unscaledColor.red * 255,
-        green: unscaledColor.green * 255,
-        blue: unscaledColor.blue * 255
-      };
-
-      projectOptions.set("brush.color", color);
+      updateHSVColor(selectedHue, saturation, value);
     }
 
     performRedraw();
@@ -265,8 +266,10 @@ export function createColorWheelView(plugin, projectOptions) {
       return;
     }
 
-    const hsvColor = rgbToHsv(color.red / 255, color.green / 255, color.blue / 255);
-    selectedHue = hsvColor.hue * Math.PI * 2;
+    if (!disableHueChange) {
+      const hsvColor = rgbToHsv(color.red / 255, color.green / 255, color.blue / 255);
+      selectedHue = hsvColor.hue * Math.PI * 2;
+    }
 
     performRedraw();
   });
