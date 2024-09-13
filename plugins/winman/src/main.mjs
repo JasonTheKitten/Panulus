@@ -58,10 +58,14 @@ function addWindowFunctions(window) {
   window.bringToFront = () => {
     const parent = window.parentElement;
     const windows = parent.children;
+    let originalWindowOrder = [];
+    for (const win of windows) {
+      originalWindowOrder.push(win);
+    }
 
     // Reparenting the current window will break event handling, so
     // reparent all other windows instead.
-    for (const win of windows) {
+    for (const win of originalWindowOrder) {
       if (win !== window) {
         parent.insertBefore(win, window);
       }

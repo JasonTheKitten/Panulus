@@ -1,0 +1,5 @@
+{
+  "name": "Layer Dock",
+  "id": "base.core.layerdock",
+  "main": "src/main"
+}

@@ -12,10 +12,10 @@ export async function setup(plugin) {
   rootPane.appendChild(canvas.content());
 
   const layerService = plugin.service("base.core.layer");
-  const layer = layerService.createLayer(canvasSize);
   const layerTree = layerService.createLayerTree();
-  layerTree.addLayer(layer);
+  layerTree.rootGroup().newLayer(canvasSize);
   canvas.useLayerTree(layerTree);
+  layerTree.onChanged(() => canvas.redraw());
 
   let brush;
   plugin.onEachProvider("base.core.brush", { provide: (name, brushes) => {
@@ -26,6 +26,7 @@ export async function setup(plugin) {
   const projectOptions = projectService.createProjectOptions(plugin);
   const project = projectService.createProject(projectOptions);
   projectService.setCurrentProject(project);
+  projectOptions.set("layer.tree", layerTree);
 
   const drawOptions = {
     brush: brush,
