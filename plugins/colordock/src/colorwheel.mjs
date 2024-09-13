@@ -212,6 +212,10 @@ export function createColorWheelView(plugin, projectOptions) {
     const trianglePoints = canvasDeterminePointsOfTriangleWithinCircle(INNER_RADIUS_FACTOR, width);
     enableSaturationValueSelection = isInTriangle(e.offsetX, e.offsetY, trianglePoints);
 
+    if (enableHueSelection || enableSaturationValueSelection) {
+      document.addEventListener("mouseup", handleMouseUpEvent);
+    }
+
     handleMouseMoveEvent(e);
   }
   function handleMouseMoveEvent(e) {
@@ -253,6 +257,8 @@ export function createColorWheelView(plugin, projectOptions) {
   function handleMouseUpEvent(e) {
     enableHueSelection = false;
     enableSaturationValueSelection = false;
+
+    document.removeEventListener("mouseup", handleMouseUpEvent);
   }
 
   colorWheelUICanvas.addEventListener("mousedown", handleMouseDownEvent);

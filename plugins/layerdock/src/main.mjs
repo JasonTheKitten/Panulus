@@ -37,7 +37,8 @@ function createWindowContent(plugin) {
   newLayerButton.addEventListener("click", () => {
     const layerTree = currentProjectOptions.get("layer.tree");
     const rootGroup = layerTree.rootGroup();
-    rootGroup.newLayer();
+    const newLayer = rootGroup.newLayer();
+    layerTree.selectLayer(newLayer);
     setupLayerList(layerList, layerTree);
   });
 

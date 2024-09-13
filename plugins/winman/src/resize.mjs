@@ -29,6 +29,8 @@ export function setupResizeSystem(window) {
       top: window.offsetTop
     }
     currentDirectionMap = directionMap;
+
+    e.preventDefault();
   }
   function onResize(e) {
     const deltaX = e.clientX - startParams.x;
@@ -48,6 +50,8 @@ export function setupResizeSystem(window) {
     if (currentDirectionMap.bottom) {
       windowContent.style.height = `${startParams.height + deltaY}px`;
     }
+
+    e.preventDefault();
   }
   function onMouseMove(e) {
     if (e.target.closest(".maximized")) {

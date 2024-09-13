@@ -16,6 +16,8 @@ export function setupDragSystem(window) {
 
       window.style.left = `${windowX + deltaX}px`;
       window.style.top = `${windowY + deltaY}px`;
+
+      e.preventDefault();
     }
 
     function onMouseUp() {

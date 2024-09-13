@@ -144,10 +144,13 @@
 
   flex-grow: 1;
 
+  min-width: 100%;
   width: 800px;
   height: 600px;
 
   border-top: none;
+
+  overflow: auto;
 }
 
 .winman-layout .window.maximized > .content {

@@ -1,41 +1,15 @@
-export default class Layer {
+import LayerBase from "./layerbase.mjs";
 
-  #name
-  #layerTree
+export default class Layer extends LayerBase {
+
   #canvas;
   #currentOperation;
 
-  #visible = true;
-
   constructor(options, layerTree) {
-    options = options || {};
-    this.#name = options.name || "Unnamed Layer";
-    this.#layerTree = layerTree;
+    super(options, layerTree);
     this.#canvas = document.createElement("canvas");
     this.#canvas.width = options.width || 800;
     this.#canvas.height = options.height || 600;
-  }
-
-  name() {
-    return this.#name;
-  }
-
-  rename(name) {
-    this.#name = name;
-    this.#layerTree.notifyChanged(this, "name");
-  }
-
-  visible() {
-    return this.#visible;
-  }
-
-  toggleVisibility() {
-    setVisibility(!this.#visible);
-  }
-
-  setVisibility(visible) {
-    this.#visible = visible;
-    this.#layerTree.notifyChanged(this, "visibility");
   }
 
   drawToCanvas(canvas) {

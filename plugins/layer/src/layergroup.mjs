@@ -1,59 +1,31 @@
-export default class LayerGroup {
+import LayerBase from "./layerbase.mjs";
 
-  #name;
-  #layerTree;
+export default class LayerGroup extends LayerBase {
+
   #layers;
 
-  #visible = true;
-
   constructor(options, layerTree) {
-    this.#name = options.name || "Unnamed Layer Group";
-    this.#layerTree = layerTree;
+    super(options, layerTree);
     this.#layers = [];
-  }
-
-  name() {
-    return this.#name;
-  }
-
-  rename(name) {
-    this.#name = name;
-    this.#layerTree.notifyChanged(this, "name");
   }
 
   layers() {
     return this.#layers;
   }
 
-  visible() {
-    return this.#visible;
-  }
-
-  toggleVisibility() {
-    setVisibility(!this.#visible);
-  }
-
-  setVisibility(visible) {
-    this.#visible = visible;
-    this.#layerTree.notifyChanged(this, "visibility");
-  }
-
-  owningLayerTree() {
-    return this.#layerTree;
-  }
-
   newLayer(options) {
-    const layer = this.#layerTree.createLayer(options);
+    const layer = this.owningLayerTree().createLayer(options);
     this.#layers.push(layer);
-    this.#layerTree.notifyChanged(layer, "added");
+    this.owningLayerTree().notifyChanged(layer, "added");
+    
     return layer;
   }
 
   removeLayer(layer) {
     const index = this.#layers.indexOf(layer);
     if (index !== -1) {
-      this.#layerTree.notifyChanged(layer, "removed");
       this.#layers.splice(index, 1);
+      this.owningLayerTree().notifyChanged(layer, "removed");
     }
   }
 
