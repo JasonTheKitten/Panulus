@@ -1,11 +1,15 @@
 <div class = "layerdock">
   <h3>Layers</h3>
   <div class = "layers">No active layers</div>
-  <input type = "button" class = "new-layer-button" value = "New Layer +" />
+  <div class = "buttons">
+    <input type = "button" class = "new-layer-button" value = "New Layer +" />
+    <input type = "button" class = "new-group-button" value = "New Group +" />
+    <input type = "button" class = "delete-layer-button" value = "Delete Layer" />
+  </div>
 </div>
 
 <template class = "layer-template">
-  <div class = "layer">
+  <div class = "layerdock-managed layer">
     <input type = "checkbox" class = "layer-visibility" />
     <div class = "layer-icon"></div>
     <div class = "layer-name"></div>
@@ -13,7 +17,7 @@
 </template>
 
 <template class = "group-template">
-  <div class = "layer layer-group">
+  <div class = "layerdock-managed layer layer-group">
     <input type = "checkbox" class = "layer-visibility" />
     <input type = "checkbox" class = "group-expand" />
     <div class = "layer-icon"></div>

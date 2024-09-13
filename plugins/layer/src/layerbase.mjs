@@ -37,4 +37,19 @@ export default class LayerBase {
     return this.#layerTree;
   }
 
+  parentGroup() {
+    let groupStack = [ this.#layerTree.rootGroup() ];
+    while (groupStack.length > 0) {
+      let group = groupStack.pop();
+      if (group.layers().indexOfLayer(this) != -1) {
+        return group;
+      }
+      for (const subLayer of group.layers()) {
+        if (subLayer.layers) {
+          groupStack.push(subLayer);
+        }
+      }
+    }
+  }
+
 }

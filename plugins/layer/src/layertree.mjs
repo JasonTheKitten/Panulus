@@ -4,6 +4,7 @@ import Layer from "./layer.mjs";
 export default class LayerTree {
 
   #currentLayer;
+  #currentParentGroup;
   #rootGroup;
 
   #nextLayerId = 0;
@@ -17,13 +18,14 @@ export default class LayerTree {
     this.#listeners.push(listener);
   }
 
-  createLayer(options) {
+  createLayer(options, group) {
     options = Object.assign({}, options);
     options.name = options.name || `Layer ${this.#nextLayerId++}`;
     let layer = new Layer(options, this);
 
     if (!this.#currentLayer) {
       this.#currentLayer = layer;
+      this.#currentParentGroup = group || this.#rootGroup;
     }
 
     return layer;
@@ -33,9 +35,14 @@ export default class LayerTree {
     return this.#currentLayer;
   }
 
-  selectLayer(layer) {
+  selectedLayerParent() {
+    return this.#currentParentGroup;
+  }
+
+  selectLayer(layer, parent) {
     this.notifyChanged(this.#currentLayer, "deselected");
     this.#currentLayer = layer;
+    this.#currentParentGroup = parent;
   }
 
   rootGroup() {

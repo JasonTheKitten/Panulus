@@ -1,8 +1,18 @@
 :root {
   --selected-layer-color: #2e2e69;
   --selected-layer-text-color: #FFFFFF;
+  --dragging-layer-color: #333366;
+  --dragging-layer-text-color: #FFFFFF;
+  --drag-border-color: #FFFFFF;
   --layer-border-color: #333333;
   --new-layer-button-color: #2e2e69;
+  --delete-layer-button-color: #692e2e;
+}
+
+.layerdock {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .layerdock > h3 {
@@ -10,25 +20,67 @@
   margin: .5em 0em;
 }
 
-.layerdock > .new-layer-button {
+.layerdock > .buttons {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: .5em;
+}
+
+.layerdock > .buttons > input[type="button"] {
+  flex-grow: 1;
+
   padding: 1em;
-  margin: 1em;
-  background-color: var(--new-layer-button-color);
+  margin: .5em;
   color: #FFFFFF;
   border: none;
   cursor: pointer;
 }
 
+.layerdock > .buttons > .new-layer-button,
+.layerdock > .buttons > .new-group-button {
+  background-color: var(--new-layer-button-color);
+}
+
+.layerdock > .buttons > .delete-layer-button {
+  background-color: var(--delete-layer-button-color);
+}
+
 .layerdock > .layers {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.layerdock > .layers:last-child {
   border-bottom: 1px solid var(--layer-border-color);
 }
 
-.layerdock .layer > input[type="checkbox"], .layerdock .layer > .layer-name, .layerdock .layer > .layer-icon {
+.layerdock-managed.layer > input[type="checkbox"],
+.layerdock-managed.layer > .layer-name,
+.layerdock-managed.layer > .layer-icon {
   display: inline-block;
 }
 
-.layerdock .layer {
+.layerdock-managed.layer {
   padding: 1em;
+}
+
+.layerdock-managed.layer.dragging {
+  background-color: var(--dragging-layer-color);
+  color: var(--dragging-layer-text-color);
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+.layerdock-managed.layer.drag-over-top {
+  border-top: 4px solid var(--drag-border-color);
+}
+
+.layerdock-managed.layer.drag-over-bottom {
+  border-bottom: 4px solid var(--drag-border-color);
+}
+
+.layerdock .layer {
   border-top: 1px solid var(--layer-border-color);
 }
 
