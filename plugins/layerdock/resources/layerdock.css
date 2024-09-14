@@ -1,11 +1,11 @@
 :root {
-  --selected-layer-color: #2e2e69;
+  --selected-layer-color: var(--button-color);
   --selected-layer-text-color: #FFFFFF;
   --dragging-layer-color: #333366;
   --dragging-layer-text-color: #FFFFFF;
   --drag-border-color: #FFFFFF;
   --layer-border-color: #333333;
-  --new-layer-button-color: #2e2e69;
+  --new-layer-button-color: var(--button-color);
   --delete-layer-button-color: #692e2e;
 }
 

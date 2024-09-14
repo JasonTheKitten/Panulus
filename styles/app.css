@@ -1,3 +1,7 @@
+:root {
+  --button-color: #2e2e69;
+}
+
 html, body, #app {
   font-family: 'Open Sans', 'Roboto', sans-serif;
 

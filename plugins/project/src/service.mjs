@@ -10,6 +10,10 @@ export function createService(plugin) {
 
   service.currentProject = () => currentProject;
   service.setCurrentProject = (project) => {
+    if (currentProject === project) {
+      return;
+    }
+    
     currentProject = project;
     plugin.messageBus().channel(PROJECT_CHANNEL).publish("currentProjectChange", project);
   };

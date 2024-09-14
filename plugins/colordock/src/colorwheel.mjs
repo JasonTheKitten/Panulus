@@ -146,7 +146,8 @@ export function createColorWheelView(plugin, projectOptions) {
     const minValueClient = Math.min(y1, y2, y3);
     const valueY = rescaleValue(hsvColor.value, 0, 1, minValueClient, maxValueClient);
 
-    ctx.strokeStyle = `rgb(${255 - rgbColor.red}, ${255 - rgbColor.green}, ${255 - rgbColor.blue})`;
+    const distinctColor = hsvToRgb((selectedHue + Math.PI) / Math.PI / 2, 1, 1 - hsvColor.value * (1 - hsvColor.saturation));
+    ctx.strokeStyle = `rgb(${distinctColor.red * 255}, ${distinctColor.green * 255}, ${distinctColor.blue * 255})`;
     ctx.fillStyle = `rgb(${rgbColor.red}, ${rgbColor.green}, ${rgbColor.blue})`;
     ctx.lineWidth = 1;
     ctx.beginPath();

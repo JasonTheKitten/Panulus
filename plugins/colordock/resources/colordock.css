@@ -1,3 +1,7 @@
+:root {
+  --colordock-add-custom-color: var(--button-color);
+}
+
 .colordock {
   height: 100%;
   display: flex;
@@ -23,6 +27,7 @@
 .colordock .colorpalette > h3 {
   padding-left: 1em;
   margin-bottom: .3em;
+  width: calc(100% - 2em);
 }
 
 .colordock .colorpalette > .palette {
@@ -50,6 +55,19 @@
   height: calc(2em - 4px);
 }
 
+.colordock .colorpalette > .custom-palette > .add-color {
+  width: 2em;
+  height: 2em;
+  font-size: 1em;
+  padding: 0;
+  border-radius: 10%;
+  border: 1px solid gray;
+  cursor: pointer;
+  flex-grow: 0;
+  background-color: var(--colordock-add-custom-color);
+  color: white;
+}
+
 .colordock .colorpalette > .color-name-wrapper {
   flex-grow: 1;
   display: flex;
@@ -69,7 +87,7 @@
 
 .colordock .colorwheel > h3 {
   padding-left: 1em;
-  width: calc(100% - 2em);
+  align-self: flex-start;
 }
 
 .colordock .colorwheel > .colorwheel-canvas-holder {

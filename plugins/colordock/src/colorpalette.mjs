@@ -16,12 +16,14 @@ const DEFAULT_PALETTE = [
   { name: "Gray 13", hex: "#DDDDDD" },
   { name: "Gray 14", hex: "#EEEEEE" },
   { name: "White", hex: "#FFFFFF" },
-  { name: "Red", hex: "#FF0000" },
-  { name: "Green", hex: "#00FF00" },
-  { name: "Blue", hex: "#0000FF" },
+
   { name: "Cyan", hex: "#00FFFF" },
   { name: "Magenta", hex: "#FF00FF" },
   { name: "Yellow", hex: "#FFFF00" },
+
+  { name: "Red", hex: "#FF0000" },
+  { name: "Green", hex: "#00FF00" },
+  { name: "Blue", hex: "#0000FF" },
 
   // Additional colors
   { name: "Orange", hex: "#FFA500" },
@@ -45,83 +47,50 @@ export async function setup(plugin) {
 export function createPaletteView(plugin, projectOptions) {
   const colorPaletteRoot = colorPaletteHTML.cloneNode(true);
 
-  const paletteView = colorPaletteRoot.querySelector(".palette");
+  const defaultPaletteView = colorPaletteRoot.querySelector(".default-palette");
+  const recentPaletteView = colorPaletteRoot.querySelector(".recent-palette");
+  const customPaletteView = colorPaletteRoot.querySelector(".custom-palette");
   const colorName = colorPaletteRoot.querySelector(".color-name");
+
+  const additionalPaletteViews = [recentPaletteView, customPaletteView];
 
   const colorPalette = DEFAULT_PALETTE.map(color => hexSpecToColor(color));
   let currentColor = null;
 
-  function hexToRgb(hex) {
-    return {
-      red: parseInt(hex.slice(1, 3), 16),
-      green: parseInt(hex.slice(3, 5), 16),
-      blue: parseInt(hex.slice(5, 7), 16)
-    };
-  }
-
-  function hexSpecToColor(colorSpec) {
-    const colorView = document.createElement("div");
-    colorView.classList.add("color");
-    colorView.style.backgroundColor = colorSpec.hex;
-
-    return {
-      name: colorSpec.name,
-      hex: colorSpec.hex,
-      view: colorView,
-      ...hexToRgb(colorSpec.hex)
-    }
-  }
-
-  function extractRgb(color) {
-    return {
-      red: color.red,
-      green: color.green,
-      blue: color.blue
-    };
-  }
-
-
-  function calculateColorDistance(color1, color2) {
-    const redDiff = color1.red - color2.red;
-    const greenDiff = color1.green - color2.green;
-    const blueDiff = color1.blue - color2.blue;
-
-    return Math.sqrt(redDiff * redDiff + greenDiff * greenDiff + blueDiff * blueDiff);
-  }
-
-  function getClosestPaletteColor(targetColor) {
-    let closestColor = null;
-    let closestDistance = Number.MAX_VALUE;
-    for (const color of colorPalette) {
-      const distance = calculateColorDistance(targetColor, color);
-      if (distance < closestDistance) {
-        closestColor = color;
-        closestDistance = distance;
-      }
-    }
-
-    return closestColor;
-  }
-
-  colorPaletteRoot.addColorOption = function(color) {
+  colorPaletteRoot.addColorOptionListeners = function(color) {
     const colorView = color.view;
 
     colorView.addEventListener("mouseover", () => {
-      colorName.textContent = color.name;
+      if (color.name) {
+        colorName.textContent = color.name;
+      }
     });
     colorView.addEventListener("click", () => {
       projectOptions.set("brush.color", extractRgb(color));
-      watcher.sync();
     });
     colorView.addEventListener("mouseleave", () => {
       colorName.textContent = currentColor == null ? "None" : currentColor.name;
     });
 
-    paletteView.appendChild(colorView);
+    const currentColorValue = projectOptions.get("brush.color", { red: 0, green: 0, blue: 0 });
+    if (rgbEqual(currentColorValue, color)) {
+      colorView.classList.add("selected");
+    }
+  }
+  colorPaletteRoot.removeRGBColorOption = function(rgbSpec, target) {
+    for (const child of target.children) {
+      const color = child.color;
+      if (!color) continue;
+      if (rgbEqual(color, rgbSpec)) {
+        target.removeChild(child);
+        return;
+      }
+    }
   }
 
   for (const color of colorPalette) {
-    colorPaletteRoot.addColorOption(color);
+    colorPaletteRoot.addColorOptionListeners(color);
+    defaultPaletteView.appendChild(color.view);
   }
 
   const watcher = projectOptions.createWatcher(plugin);
@@ -134,14 +103,126 @@ export function createPaletteView(plugin, projectOptions) {
       colorName.textContent = "None";
       return;
     }
-    currentColor = getClosestPaletteColor(value);
+
+    currentColor = getClosestPaletteColor(value, colorPalette);
     if (currentColor == null) {
       colorName.textContent = "None";
       return;
     }
     colorName.textContent = currentColor.name;
     currentColor.view.classList.add("selected");
+
+    for (const view of additionalPaletteViews) {
+      for (const child of view.children) {
+        const color = child.color;
+        if (color == null) continue;
+        if (rgbEqual(color, currentColor)) {
+          color.view.classList.add("selected");
+        } else {
+          color.view.classList.remove("selected");
+        }
+      }
+    }
+  });
+
+  // Attempt to detect when a color is actually used - will probably refine this later
+  watcher.watch("edittracker.flatfuture", value => {
+    if (value == null || value.length !== 0) return; // Probably an undo
+
+    const currentColorSpec = projectOptions.get("brush.color", { red: 0, green: 0, blue: 0 });
+    const currentColor = rgbSpecToColor(currentColorSpec);
+    colorPaletteRoot.removeRGBColorOption(currentColor, recentPaletteView);
+    colorPaletteRoot.addColorOptionListeners(currentColor);
+    recentPaletteView.prepend(currentColor.view);
+
+    const maxRecentColors = projectOptions.get("colorpalette.maxrecentcolors", 20);
+    while (recentPaletteView.children.length > maxRecentColors) {
+      recentPaletteView.removeChild(recentPaletteView.lastChild);
+    }
+  });
+
+  colorPaletteRoot.querySelector(".add-color").addEventListener("click", () => {
+    const customColor = projectOptions.get("brush.color", { red: 0, green: 0, blue: 0 });
+    const customColorView = rgbSpecToColor(customColor);
+    colorPaletteRoot.removeRGBColorOption(customColor, customPaletteView);
+    colorPaletteRoot.addColorOptionListeners(customColorView);
+    customPaletteView.prepend(customColorView.view);
+    customColorView.view.classList.add("selected");
   });
 
   return colorPaletteRoot;
+}
+
+function hexToRgb(hex) {
+  return {
+    red: parseInt(hex.slice(1, 3), 16),
+    green: parseInt(hex.slice(3, 5), 16),
+    blue: parseInt(hex.slice(5, 7), 16)
+  };
+}
+
+function hexSpecToColor(colorSpec) {
+  const colorView = document.createElement("div");
+  colorView.classList.add("color");
+  colorView.style.backgroundColor = colorSpec.hex;
+
+  colorView.color = {
+    name: colorSpec.name,
+    hex: colorSpec.hex,
+    view: colorView,
+    ...hexToRgb(colorSpec.hex)
+  };
+
+  return colorView.color;
+}
+
+function rgbEqual(color1, color2) {
+  return (
+    color1.red === color2.red &&
+    color1.green === color2.green &&
+    color1.blue === color2.blue);
+}
+
+function rgbSpecToColor(colorSpec) {
+  const colorView = document.createElement("div");
+  colorView.classList.add("color");
+  colorView.style.backgroundColor = `rgb(${colorSpec.red}, ${colorSpec.green}, ${colorSpec.blue})`;
+
+  colorView.color = {
+    name: colorSpec.name || "Custom",
+    view: colorView,
+    ...colorSpec
+  }
+
+  return colorView.color;
+}
+
+function extractRgb(color) {
+  return {
+    red: color.red,
+    green: color.green,
+    blue: color.blue
+  };
+}
+
+function calculateColorDistance(color1, color2) {
+  const redDiff = color1.red - color2.red;
+  const greenDiff = color1.green - color2.green;
+  const blueDiff = color1.blue - color2.blue;
+
+  return Math.sqrt(redDiff * redDiff + greenDiff * greenDiff + blueDiff * blueDiff);
+}
+
+function getClosestPaletteColor(targetColor, colorPalette) {
+  let closestColor = null;
+  let closestDistance = Number.MAX_VALUE;
+  for (const color of colorPalette) {
+    const distance = calculateColorDistance(targetColor, color);
+    if (distance < closestDistance) {
+      closestColor = color;
+      closestDistance = distance;
+    }
+  }
+
+  return closestColor;
 }
