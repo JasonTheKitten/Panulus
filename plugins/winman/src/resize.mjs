@@ -1,3 +1,5 @@
+const BORDER_WIDTH = 5; // A bit larger than the actual value, to make it easier to hit
+
 // TODO: What if window is too small?
 export function setupResizeSystem(window) {
   const windowContent = window.querySelector(".content");
@@ -53,7 +55,10 @@ export function setupResizeSystem(window) {
 
     e.preventDefault();
   }
-  function onMouseMove(e) {
+  function onSelect(e) {
+    e.preventDefault();
+  }
+  function onMouseMove(e, directionMap) {
     if (e.target.closest(".maximized")) {
       return;
     }
@@ -62,45 +67,61 @@ export function setupResizeSystem(window) {
       onResize(e);
       return;
     }
-
-    const borderWidth = 5; // A bit larger than the actual value, to make it easier to hit
-    const rect = window.getBoundingClientRect();
     
+    const isResizing = checkIsResizing(directionMap);
+    if (isMouseDown && isResizing) {
+      startResize(e, directionMap);
+    } else if (!isMouseDown){
+      showDirectionalCursor(directionMap);
+    }
+  }
+  
+  function generateDirectionMap(e) {
+    const rect = window.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
-    const directionMap = {
+    const borderWidth = BORDER_WIDTH;
+    return {
       left: mouseX <= borderWidth,
       right: mouseX >= rect.width - borderWidth,
       top: mouseY <= borderWidth,
       bottom: mouseY >= rect.height - borderWidth
     }
-
-    if (isMouseDown) {
-      startResize(e, directionMap);
-    } else {
-      showDirectionalCursor(directionMap);
-    }
   }
-  window.addEventListener("mousemove", onMouseMove);
+
+  function checkIsResizing(directionMap) {
+    return directionMap.left || directionMap.right || directionMap.top || directionMap.bottomz;
+  }
+
+  const mouseMovePreviewHandler = (e) => {
+    const directionMap = generateDirectionMap(e);
+    onMouseMove(e, directionMap);
+  };
+  window.addEventListener("mousemove", mouseMovePreviewHandler);
 
   window.addEventListener("mousedown", e => {
     if (e.target.closest(".maximized")) {
       return;
     }
 
+    const directionMap = generateDirectionMap(e);
+    const mouseMoveHandler = (e) => onMouseMove(e, directionMap);
+
     isMouseDown = true;
     
     function onMouseUp() {
-      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mousemove", mouseMoveHandler);
       document.removeEventListener("mouseup", onMouseUp);
-      window.addEventListener("mousemove", onMouseMove);
+      document.removeEventListener("selectstart", onSelect, true);
+      window.addEventListener("mousemove", mouseMovePreviewHandler);
       isMouseDown = false;
       hasStartedResizing = false;
     }
 
-    window.removeEventListener("mousemove", onMouseMove);
-    document.addEventListener("mousemove", onMouseMove);
+    window.removeEventListener("mousemove", mouseMovePreviewHandler);
+    document.addEventListener("mousemove", mouseMoveHandler);
     document.addEventListener("mouseup", onMouseUp);
+    document.addEventListener("selectstart", onSelect, true);
   });
 }

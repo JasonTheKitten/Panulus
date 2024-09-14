@@ -103,7 +103,7 @@ export function createColorWheelView(plugin, projectOptions) {
     gl.enableVertexAttribArray(hsvCoordAttributeLocation);
     gl.vertexAttribPointer(hsvCoordAttributeLocation, 3, gl.FLOAT, false, 0, 0);
 
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
 
   function redrawColorWheelUIElements(canvas) {
@@ -214,18 +214,18 @@ export function createColorWheelView(plugin, projectOptions) {
     enableSaturationValueSelection = isInTriangle(e.offsetX, e.offsetY, trianglePoints);
 
     if (enableHueSelection || enableSaturationValueSelection) {
+      colorWheelUICanvas.addEventListener("mousemove", handleMouseMoveEvent);
       document.addEventListener("mouseup", handleMouseUpEvent);
     }
 
     handleMouseMoveEvent(e);
   }
   function handleMouseMoveEvent(e) {
-    e.preventDefault();
-
     const width = colorWheelCanvas.clientWidth;
     const height = colorWheelCanvas.clientHeight;
     
     if (enableHueSelection) {
+      e.preventDefault();
       const angle = Math.atan2(e.offsetY - height / 2, e.offsetX - width / 2);
       selectedHue = angle + Math.PI;
 
@@ -234,6 +234,7 @@ export function createColorWheelView(plugin, projectOptions) {
       
       updateHSVColor(selectedHue, oldHsvColor.saturation, oldHsvColor.value);
     } else if (enableSaturationValueSelection) {
+      e.preventDefault();
       const trianglePoints = canvasDeterminePointsOfTriangleWithinCircle(INNER_RADIUS_FACTOR, width);
       const [x1, y1, x2, y2, x3, y3] = trianglePoints;
       
@@ -259,11 +260,11 @@ export function createColorWheelView(plugin, projectOptions) {
     enableHueSelection = false;
     enableSaturationValueSelection = false;
 
+    colorWheelUICanvas.removeEventListener("mousemove", handleMouseMoveEvent);
     document.removeEventListener("mouseup", handleMouseUpEvent);
   }
 
   colorWheelUICanvas.addEventListener("mousedown", handleMouseDownEvent);
-  colorWheelUICanvas.addEventListener("mousemove", handleMouseMoveEvent);
   colorWheelUICanvas.addEventListener("mouseup", handleMouseUpEvent);
   document.addEventListener("mousemove", handleDocumentMouseMoveEvent);
 

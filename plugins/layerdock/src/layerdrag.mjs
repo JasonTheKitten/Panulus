@@ -10,7 +10,7 @@ export function createDragState(options) {
 }
 
 export function connectLayerDrag(layer, layerGroup, layerDiv, dragState) {
-  function setupLayerMove(e) {
+  /*function setupLayerMove(e) {
     dragState.dragLayer = layer;
     dragState.dragGroup = layerGroup;
     dragState.dragOffsetX = e.clientX - layerDiv.getBoundingClientRect().left;
@@ -103,5 +103,5 @@ export function connectLayerDrag(layer, layerGroup, layerDiv, dragState) {
   layerDiv.addEventListener("mousedown", onLayerMouseDown);
   layerDiv.addEventListener("mousemove", onLayerMoveOver);
   layerDiv.addEventListener("mouseout", onLayerMouseOut);
-  layerDiv.addEventListener("mouseup", onLayerMouseUp);
+  layerDiv.addEventListener("mouseup", onLayerMouseUp);*/
 }

@@ -86,6 +86,9 @@ export class Canvas {
   #setupDrawListener() {
     const self = this;
     this.#canvas.addEventListener("mousedown", event => {
+      event.preventDefault();
+      event.stopPropagation();
+
       const layer = self.#layerTree.selectedLayer();
       if (!layer) return;
 
@@ -99,6 +102,8 @@ export class Canvas {
         }
         operation.draw(self.#rescaleMouseCoords({ x: event.offsetX, y: event.offsetY }));
         self.redraw();
+
+        event.preventDefault();
       }
 
       function leaveEvent(event) {
